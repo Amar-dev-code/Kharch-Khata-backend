@@ -1,29 +1,32 @@
 const express = require("express");
-const { MongoClient } = require("mongodb");
 
-const { getCategory } = require("./routes/getCategory");
+const { getCategories } = require("./routes/getCategories");
+const { connectToDataBase } = require("./db/initializedb");
+const { insertExpenseCategory } = require("./routes/insertExpenseCategory");
+
 const app = express();
 const port = 3000;
+
+app.get("/getExpenseCategories", async (req, res) => {
+  const client = await connectToDataBase();
+  const categories = await getCategories(client);
+  if (categories.length > 0) {
+    res.status(200).send(categories);
+  } else res.status(500).send("Server error");
+});
+
+app.post("/submitExpense", async (req, res) => {
+  const client = await connectToDataBase();
+  const categories = await getCategories(client);
+  if (!categories.includes(req.expenseCategory)) {
+    await insertExpenseCategory(client, req.expenseCategory);
+  } else {
+  }
+});
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
-
-async function connectToDataBase() {
-  const uri =
-    "mongodb+srv://dbUser:7gYppmXluBPtoUEP@cluster0.iasv4.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-  const client = new MongoClient(uri);
-  try {
-    await client.connect();
-    console.log(getCategory(client));
-  } catch (e) {
-    console.error(e);
-  } finally {
-    console.log("amrendra");
-    //await client.close();
-  }
-}
-connectToDataBase().catch(console.error);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
