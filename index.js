@@ -3,6 +3,7 @@ const express = require("express");
 const { getCategories } = require("./routes/getCategories");
 const { connectToDataBase } = require("./db/initializedb");
 const { insertExpenseCategory } = require("./routes/insertExpenseCategory");
+const {insertCumulativeExpense} = require("./routes/insertCumulativeExpense");
 
 const app = express();
 const port = 3000;
@@ -12,6 +13,8 @@ app.get("/getExpenseCategories", async (req, res) => {
   const categories = await getCategories(client);
   if (categories.length > 0) {
     res.status(200).send(categories);
+  const test= await insertCumulativeExpense(client,2023,"January");
+  test ? console.log("exists"):console.log("doesn't exist");
   } else res.status(500).send("Server error");
 });
 
