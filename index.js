@@ -2,8 +2,15 @@ const express = require("express");
 
 const { getCategories } = require("./routes/getCategories");
 const { connectToDataBase } = require("./db/initializedb");
-const { insertExpenseCategory } = require("./routes/insertExpenseCategory");
-const {insertCumulativeExpense} = require("./routes/insertCumulativeExpense");
+const {
+  insertTotalMonthlyExpenses,
+} = require("./routes/insertTotalMonthlyExpenses");
+const {
+  insertMonthlyCategoryAndExpense,
+} = require("./routes/insertMonthlyCategoryAndExpense");
+const {
+  insertCategoryWiseExpenses,
+} = require("./routes/insertCategoryWiseExpenses");
 
 const app = express();
 const port = 3000;
@@ -13,8 +20,7 @@ app.get("/getExpenseCategories", async (req, res) => {
   const categories = await getCategories(client);
   if (categories.length > 0) {
     res.status(200).send(categories);
-  const test= await insertCumulativeExpense(client,2023,"January");
-  test ? console.log("exists"):console.log("doesn't exist");
+    await insertCategoryWiseExpenses(client, "uber", "2023", "january", 210);
   } else res.status(500).send("Server error");
 });
 
@@ -23,8 +29,8 @@ app.post("/submitExpense", async (req, res) => {
   const categories = await getCategories(client);
   if (!categories.includes(req.expenseCategory)) {
     await insertExpenseCategory(client, req.expenseCategory);
-  } else {
   }
+  await insertTotalMonthlyExpenses(client, 2024, "january", 27.01);
 });
 
 app.get("/", (req, res) => {
