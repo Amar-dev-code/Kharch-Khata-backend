@@ -1,8 +1,7 @@
+const { getExpenseCategoriesFromDb } = require("../db/expenseCategories");
+
 async function getCategories(client) {
-  const result = await client
-    .db("myFirstDatabase")
-    .collection("expenseCategory")
-    .findOne();
+  const result = await getExpenseCategoriesFromDb(client);
   return result.category;
 }
 

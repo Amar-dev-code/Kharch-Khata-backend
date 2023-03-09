@@ -1,3 +1,8 @@
+const { categoryWiseExpensesFromDb } = require("../db/categoryWiseExpenses");
+const {
+  insertCategoryWiseExpenseInDb,
+} = require("../db/insertCategoryWiseExpenseInDb");
+
 async function insertCategoryWiseExpenses(
   client,
   category,
@@ -5,19 +10,10 @@ async function insertCategoryWiseExpenses(
   month,
   amount
 ) {
-  const documents = await client
-    .db("myFirstDatabase")
-    .collection("categoryWiseExpenses")
-    .find({ [category]: { $exists: true } })
-    .toArray();
-  console.log({ documents });
+  const documents = await categoryWiseExpensesFromDb(client);
   if (!documents.length > 0) {
     const categoryYearAndMonth = `${category}.${year}.${month}`;
-    console.log({ categoryYearAndMonth });
-    await client
-      .db("myFirstDatabase")
-      .collection("categoryWiseExpenses")
-      .updateOne({}, { $set: { [[categoryYearAndMonth]]: amount } });
+    await insertCategoryWiseExpenseInDb(client, categoryYearAndMonth, amount);
   } else {
     documents.forEach(async (document) => {
       if (document.hasOwnProperty(category)) {
@@ -25,20 +21,19 @@ async function insertCategoryWiseExpenses(
           if (document[category][year].hasOwnProperty(month)) {
             const expenseToBeUpdated = document[category][year][month] + amount;
             const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
-            await client
-              .db("myFirstDatabase")
-              .collection("categoryWiseExpenses")
-              .updateOne(
-                {},
-                { $set: { [[monthToBeUpdatedInDb]]: expenseToBeUpdated } }
-              );
+            await insertCategoryWiseExpenseInDb(
+              client,
+              monthToBeUpdatedInDb,
+              expenseToBeUpdated
+            );
           }
         } else {
           const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
-          await client
-            .db("myFirstDatabase")
-            .collection("categoryWiseExpenses")
-            .updateOne({}, { $set: { [[monthToBeUpdatedInDb]]: amount } });
+          await insertCategoryWiseExpenseInDb(
+            client,
+            monthToBeUpdatedInDb,
+            amount
+          );
         }
       }
     });

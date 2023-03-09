@@ -1,3 +1,5 @@
+const { DATABASE_NAME, COLLECTION_NAMES } = require("../constant");
+
 async function insertMonthlyCategoryAndExpense(
   client,
   year,
@@ -6,15 +8,15 @@ async function insertMonthlyCategoryAndExpense(
   amount
 ) {
   const documents = await client
-    .db("myFirstDatabase")
-    .collection("allExpensesMonthly")
+    .db(DATABASE_NAME)
+    .collection(COLLECTION_NAMES.ALL_EXPENSE_MONTHLY)
     .find({ [year]: { $exists: true } })
     .toArray();
   if (!documents.length > 0) {
     const createYearMonthCategoryExpense = `${year}.${month}.${category}`;
     await client
-      .db("myFirstDatabase")
-      .collection("cumulativeExpensesMonthly")
+      .db(DATABASE_NAME)
+      .collection(COLLECTION_NAMES.ALL_EXPENSE_MONTHLY)
       .updateOne({}, { $set: { [[createYearMonthCategoryExpense]]: amount } });
   } else {
     documents.forEach(async (document) => {
@@ -24,8 +26,8 @@ async function insertMonthlyCategoryAndExpense(
             const expenseToBeUpdated = document[year][month][category] + amount;
             const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
             await client
-              .db("myFirstDatabase")
-              .collection("allExpensesMonthly")
+              .db(DATABASE_NAME)
+              .collection(COLLECTION_NAMES.ALL_EXPENSE_MONTHLY)
               .updateOne(
                 {},
                 { $set: { [[categoryToBeUpdatedInDb]]: expenseToBeUpdated } }
@@ -34,8 +36,8 @@ async function insertMonthlyCategoryAndExpense(
         } else {
           const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
           await client
-            .db("myFirstDatabase")
-            .collection("allExpensesMonthly")
+            .db(DATABASE_NAME)
+            .collection(COLLECTION_NAMES.ALL_EXPENSE_MONTHLY)
             .updateOne({}, { $set: { [[categoryToBeUpdatedInDb]]: amount } });
         }
       }
