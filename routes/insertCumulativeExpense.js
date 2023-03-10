@@ -1,13 +1,10 @@
-const { DATABASE_NAME, COLLECTION_NAMES } = require("../constant");
+const {
+  insertCumulativeMonthlyExpenseInDb,
+} = require("../db/insertCumulativeMonthlyExpense");
 
 async function insertCumulativeExpense(client, year, month) {
   const search = [year[month]];
-  console.log(search);
-  const result = await client
-    .db(DATABASE_NAME)
-    .collection(COLLECTION_NAMES.CUMULATIVE_EXPENSE_MONTHLY)
-    .findOne({ search: { $exists: true } });
-  console.log({ result });
+  const result = await insertCumulativeMonthlyExpenseInDb(search);
   return result;
 }
 

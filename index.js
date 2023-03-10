@@ -17,8 +17,8 @@ const port = 3000;
 
 app.get("/getExpenseCategories", async (req, res) => {
   const client = await connectToDataBase();
-  const categories = await getCategories(client);
-  if (categories.length > 0) {
+  const expenseCategories = await getCategories(client);
+  if (expenseCategories.length > 0) {
     res.status(200).send(categories);
     await insertCategoryWiseExpenses(client, "uber", "2023", "january", 210);
   } else res.status(500).send("Server error");
