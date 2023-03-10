@@ -1,10 +1,7 @@
-const { DATABASE_NAME, COLLECTION_NAMES } = require("../constant");
+const { insertExpenseCategoryInDb } = require("../db/insertExpenseCategory");
 
 async function insertExpenseCategory(client, newExpenseCategory) {
-  const result = await client
-    .db(DATABASE_NAME)
-    .collection(COLLECTION_NAMES.EXPENSE_CATEGORY)
-    .updateOne({}, { $push: { category: newExpenseCategory } });
+  const result = await insertExpenseCategoryInDb(newExpenseCategory);
 }
 
 module.exports = { insertExpenseCategory };

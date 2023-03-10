@@ -1,4 +1,7 @@
-const { DATABASE_NAME, COLLECTION_NAMES } = require("../constant");
+const {
+  insertMonthlyCategoryAndExpenseInDb,
+  getRelevantDocumentsFromDb,
+} = require("../db/insertMonthlyCategoryAndExpense");
 
 async function insertMonthlyCategoryAndExpense(
   client,
@@ -7,17 +10,14 @@ async function insertMonthlyCategoryAndExpense(
   category,
   amount
 ) {
-  const documents = await client
-    .db(DATABASE_NAME)
-    .collection(COLLECTION_NAMES.ALL_EXPENSE_MONTHLY)
-    .find({ [year]: { $exists: true } })
-    .toArray();
+  const documents = await getRelevantDocumentsFromDb(client, year);
   if (!documents.length > 0) {
     const createYearMonthCategoryExpense = `${year}.${month}.${category}`;
-    await client
-      .db(DATABASE_NAME)
-      .collection(COLLECTION_NAMES.ALL_EXPENSE_MONTHLY)
-      .updateOne({}, { $set: { [[createYearMonthCategoryExpense]]: amount } });
+    await insertMonthlyCategoryAndExpenseInDb(
+      client,
+      createYearMonthCategoryExpense,
+      amount
+    );
   } else {
     documents.forEach(async (document) => {
       if (document.hasOwnProperty(year)) {
@@ -25,20 +25,19 @@ async function insertMonthlyCategoryAndExpense(
           if (document[year][month].hasOwnProperty(category)) {
             const expenseToBeUpdated = document[year][month][category] + amount;
             const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
-            await client
-              .db(DATABASE_NAME)
-              .collection(COLLECTION_NAMES.ALL_EXPENSE_MONTHLY)
-              .updateOne(
-                {},
-                { $set: { [[categoryToBeUpdatedInDb]]: expenseToBeUpdated } }
-              );
+            await insertMonthlyCategoryAndExpenseInDb(
+              client,
+              categoryToBeUpdatedInDb,
+              expenseToBeUpdated
+            );
           }
         } else {
           const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
-          await client
-            .db(DATABASE_NAME)
-            .collection(COLLECTION_NAMES.ALL_EXPENSE_MONTHLY)
-            .updateOne({}, { $set: { [[categoryToBeUpdatedInDb]]: amount } });
+          await insertMonthlyCategoryAndExpenseInDb(
+            client,
+            categoryToBeUpdatedInDb,
+            amount
+          );
         }
       }
     });
