@@ -1,7 +1,8 @@
-const { categoryWiseExpensesFromDb } = require("../db/categoryWiseExpenses");
 const {
+  categoryWiseExpensesFromDb,
   insertCategoryWiseExpenseInDb,
-} = require("../db/insertCategoryWiseExpenseInDb");
+  updateCategoryWiseExpenseInDb,
+} = require("../db/categoryWiseExpenses");
 
 async function insertCategoryWiseExpenses(
   client,
@@ -10,10 +11,16 @@ async function insertCategoryWiseExpenses(
   month,
   amount
 ) {
-  const documents = await categoryWiseExpensesFromDb(client);
+  const documents = await categoryWiseExpensesFromDb(client, category);
   if (!documents.length > 0) {
-    const categoryYearAndMonth = `${category}.${year}.${month}`;
-    await insertCategoryWiseExpenseInDb(client, categoryYearAndMonth, amount);
+    const documentToInsert = {
+      [category]: {
+        [year]: {
+          [month]: amount,
+        },
+      },
+    };
+    return await insertCategoryWiseExpenseInDb(client, documentToInsert);
   } else {
     documents.forEach(async (document) => {
       if (document.hasOwnProperty(category)) {
@@ -21,16 +28,26 @@ async function insertCategoryWiseExpenses(
           if (document[category][year].hasOwnProperty(month)) {
             const expenseToBeUpdated = document[category][year][month] + amount;
             const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
-            await insertCategoryWiseExpenseInDb(
+            return await updateCategoryWiseExpenseInDb(
               client,
+              category,
               monthToBeUpdatedInDb,
               expenseToBeUpdated
+            );
+          } else {
+            const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
+            return await updateCategoryWiseExpenseInDb(
+              client,
+              category,
+              monthToBeUpdatedInDb,
+              amount
             );
           }
         } else {
           const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
-          await insertCategoryWiseExpenseInDb(
+          return await updateCategoryWiseExpenseInDb(
             client,
+            category,
             monthToBeUpdatedInDb,
             amount
           );
@@ -38,7 +55,6 @@ async function insertCategoryWiseExpenses(
       }
     });
   }
-  return documents;
 }
 
 module.exports = { insertCategoryWiseExpenses };

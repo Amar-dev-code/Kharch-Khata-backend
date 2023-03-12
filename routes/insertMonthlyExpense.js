@@ -1,23 +1,20 @@
 const {
-  insertMonthlyCategoryAndExpenseInDb,
+  updateMonthlyExpenseInDb,
   getRelevantDocumentsFromDb,
-} = require("../db/insertMonthlyCategoryAndExpense");
+  insertMonthlyExpenseInDb,
+} = require("../db/insertMonthlyExpense");
 
-async function insertMonthlyCategoryAndExpense(
-  client,
-  year,
-  month,
-  category,
-  amount
-) {
+async function insertMonthlyExpense(client, year, month, category, amount) {
   const documents = await getRelevantDocumentsFromDb(client, year);
   if (!documents.length > 0) {
-    const createYearMonthCategoryExpense = `${year}.${month}.${category}`;
-    await insertMonthlyCategoryAndExpenseInDb(
-      client,
-      createYearMonthCategoryExpense,
-      amount
-    );
+    const documentToInsert = {
+      [year]: {
+        [month]: {
+          [category]: amount,
+        },
+      },
+    };
+    return await insertMonthlyExpenseInDb(client, documentToInsert);
   } else {
     documents.forEach(async (document) => {
       if (document.hasOwnProperty(year)) {
@@ -25,16 +22,26 @@ async function insertMonthlyCategoryAndExpense(
           if (document[year][month].hasOwnProperty(category)) {
             const expenseToBeUpdated = document[year][month][category] + amount;
             const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
-            await insertMonthlyCategoryAndExpenseInDb(
+            return await updateMonthlyExpenseInDb(
               client,
+              year,
               categoryToBeUpdatedInDb,
               expenseToBeUpdated
+            );
+          } else {
+            const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
+            return await updateMonthlyExpenseInDb(
+              client,
+              year,
+              categoryToBeUpdatedInDb,
+              amount
             );
           }
         } else {
           const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
-          await insertMonthlyCategoryAndExpenseInDb(
+          return await updateMonthlyExpenseInDb(
             client,
+            year,
             categoryToBeUpdatedInDb,
             amount
           );
@@ -42,7 +49,6 @@ async function insertMonthlyCategoryAndExpense(
       }
     });
   }
-  return documents;
 }
 
-module.exports = { insertMonthlyCategoryAndExpense };
+module.exports = { insertMonthlyExpense };
