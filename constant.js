@@ -7,6 +7,7 @@ const COLLECTION_NAMES = {
 const DATABASE_NAME = "myFirstDatabase";
 const STATUS_MESSAGES = {
   SERVER_ERROR: "Server error",
+  NO_EXPENSE_CATEGORIES_FOUND: "No expense categories found",
 };
 const ROUTES = {
   GET_EXPENSE_CATEGORIES: "/getExpenseCategories",
