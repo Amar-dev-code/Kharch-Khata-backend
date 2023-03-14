@@ -31,32 +31,28 @@ app.get(ROUTES.GET_EXPENSE_CATEGORIES, async (req, res) => {
 });
 
 app.get(ROUTES.ADD_EXPENSE, async (req, res) => {
-  const client = await connectToDataBase();
-  //const categories = await getCategories(client);
-  /*if (!categories.includes(req.expenseCategory)) {
-    const isInsertSuccess = await insertExpenseCategory(
-      client,
-      req.expenseCategory
-    );
-    if (!isInsertSuccess) {
-      res.status(500).send(STATUS_MESSAGES.SERVER_ERROR);
-    } else {
+  try {
+    const client = await connectToDataBase();
+    const categories = await getCategories(client);
+    if (!categories.includes(req.expenseCategory)) {
+      const isInsertSuccess = await insertExpenseCategory(
+        client,
+        req.expenseCategory
+      );
+      if (!isInsertSuccess) {
+        res.status(500).send(STATUS_MESSAGES.SERVER_ERROR);
+      } else {
+      }
     }
-  }*/
-  //await insertTotalMonthlyExpenses(client, 2024, "january", 27.01);
-  //await insertCategoryWiseExpenses(client,"cab",2024,"january",120);
-
-  /*res
-    .status(200)
-    .send(await insertTotalMonthlyExpenses(client, 2026, "february", 5000));*/
-  /*res
-    .status(200)
-    .send(await insertMonthlyExpense(client, 2026, "january", "rent", 5000));*/
-  res
-    .status(200)
-    .send(
-      await insertCategoryWiseExpenses(client, "rent", 2027, "march", 5000)
-    );
+    await Promise.all([
+      insertTotalMonthlyExpenses(client, 2031, "february", 5000),
+      insertMonthlyExpense(client, 2026, "january", "rent", 5000),
+      insertCategoryWiseExpenses(client, "rent", 2027, "march", 5000),
+    ]);
+    res.status(200).send("Expense Added");
+  } catch (e) {
+    res.status(500).send(STATUS_MESSAGES.SERVER_ERROR);
+  }
 });
 
 app.get("/", (req, res) => {

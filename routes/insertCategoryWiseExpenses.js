@@ -22,27 +22,18 @@ async function insertCategoryWiseExpenses(
     };
     return await insertCategoryWiseExpenseInDb(client, documentToInsert);
   } else {
-    documents.forEach(async (document) => {
-      if (document.hasOwnProperty(category)) {
-        if (document[category].hasOwnProperty(year)) {
-          if (document[category][year].hasOwnProperty(month)) {
-            const expenseToBeUpdated = document[category][year][month] + amount;
-            const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
-            return await updateCategoryWiseExpenseInDb(
-              client,
-              category,
-              monthToBeUpdatedInDb,
-              expenseToBeUpdated
-            );
-          } else {
-            const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
-            return await updateCategoryWiseExpenseInDb(
-              client,
-              category,
-              monthToBeUpdatedInDb,
-              amount
-            );
-          }
+    if (documents[0].hasOwnProperty(category)) {
+      if (documents[0][category].hasOwnProperty(year)) {
+        if (documents[0][category][year].hasOwnProperty(month)) {
+          const expenseToBeUpdated =
+            documents[0][category][year][month] + amount;
+          const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
+          return await updateCategoryWiseExpenseInDb(
+            client,
+            category,
+            monthToBeUpdatedInDb,
+            expenseToBeUpdated
+          );
         } else {
           const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
           return await updateCategoryWiseExpenseInDb(
@@ -52,8 +43,16 @@ async function insertCategoryWiseExpenses(
             amount
           );
         }
+      } else {
+        const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
+        return await updateCategoryWiseExpenseInDb(
+          client,
+          category,
+          monthToBeUpdatedInDb,
+          amount
+        );
       }
-    });
+    }
   }
 }
 
