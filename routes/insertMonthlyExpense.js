@@ -16,27 +16,18 @@ async function insertMonthlyExpense(client, year, month, category, amount) {
     };
     return await insertMonthlyExpenseInDb(client, documentToInsert);
   } else {
-    documents.forEach(async (document) => {
-      if (document.hasOwnProperty(year)) {
-        if (document[year].hasOwnProperty(month)) {
-          if (document[year][month].hasOwnProperty(category)) {
-            const expenseToBeUpdated = document[year][month][category] + amount;
-            const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
-            return await updateMonthlyExpenseInDb(
-              client,
-              year,
-              categoryToBeUpdatedInDb,
-              expenseToBeUpdated
-            );
-          } else {
-            const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
-            return await updateMonthlyExpenseInDb(
-              client,
-              year,
-              categoryToBeUpdatedInDb,
-              amount
-            );
-          }
+    if (documents[0].hasOwnProperty(year)) {
+      if (documents[0][year].hasOwnProperty(month)) {
+        if (documents[0][year][month].hasOwnProperty(category)) {
+          const expenseToBeUpdated =
+            documents[0][year][month][category] + amount;
+          const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
+          return await updateMonthlyExpenseInDb(
+            client,
+            year,
+            categoryToBeUpdatedInDb,
+            expenseToBeUpdated
+          );
         } else {
           const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
           return await updateMonthlyExpenseInDb(
@@ -46,8 +37,16 @@ async function insertMonthlyExpense(client, year, month, category, amount) {
             amount
           );
         }
+      } else {
+        const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
+        return await updateMonthlyExpenseInDb(
+          client,
+          year,
+          categoryToBeUpdatedInDb,
+          amount
+        );
       }
-    });
+    }
   }
 }
 
