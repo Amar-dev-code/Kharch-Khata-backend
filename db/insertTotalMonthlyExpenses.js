@@ -8,11 +8,11 @@ async function getMonthlyExpensesInDb(client, year) {
     .toArray();
 }
 
-async function insertTotalMonthlyExpensesInDb(client, document) {
+async function insertTotalMonthlyExpensesInDb(client, document, session) {
   const isSuccessful = await client
     .db(DATABASE_NAME)
     .collection(COLLECTION_NAMES.CUMULATIVE_EXPENSE_MONTHLY)
-    .insertOne(document);
+    .insertOne(document, { session });
   return isSuccessful.acknowledged;
 }
 
@@ -20,14 +20,16 @@ async function updateTotalMonthlyExpensesInDb(
   client,
   year,
   yearAndMonth,
-  expenseAmount
+  expenseAmount,
+  session
 ) {
   const isSuccessful = await client
     .db(DATABASE_NAME)
     .collection(COLLECTION_NAMES.CUMULATIVE_EXPENSE_MONTHLY)
     .updateOne(
       { [year]: { $exists: true } },
-      { $set: { [[yearAndMonth]]: expenseAmount } }
+      { $set: { [[yearAndMonth]]: expenseAmount } },
+      { session }
     );
   return isSuccessful.acknowledged;
 }

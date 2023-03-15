@@ -4,7 +4,14 @@ const {
   insertMonthlyExpenseInDb,
 } = require("../db/insertMonthlyExpense");
 
-async function insertMonthlyExpense(client, year, month, category, amount) {
+async function insertMonthlyExpense(
+  client,
+  year,
+  month,
+  category,
+  amount,
+  session
+) {
   const documents = await getRelevantDocumentsFromDb(client, year);
   if (!documents.length > 0) {
     const documentToInsert = {
@@ -14,7 +21,7 @@ async function insertMonthlyExpense(client, year, month, category, amount) {
         },
       },
     };
-    return await insertMonthlyExpenseInDb(client, documentToInsert);
+    return await insertMonthlyExpenseInDb(client, documentToInsert, session);
   } else {
     if (documents[0].hasOwnProperty(year)) {
       if (documents[0][year].hasOwnProperty(month)) {
@@ -26,7 +33,8 @@ async function insertMonthlyExpense(client, year, month, category, amount) {
             client,
             year,
             categoryToBeUpdatedInDb,
-            expenseToBeUpdated
+            expenseToBeUpdated,
+            session
           );
         } else {
           const categoryToBeUpdatedInDb = `${year}.${month}.${category}`;
@@ -34,7 +42,8 @@ async function insertMonthlyExpense(client, year, month, category, amount) {
             client,
             year,
             categoryToBeUpdatedInDb,
-            amount
+            amount,
+            session
           );
         }
       } else {
@@ -43,7 +52,8 @@ async function insertMonthlyExpense(client, year, month, category, amount) {
           client,
           year,
           categoryToBeUpdatedInDb,
-          amount
+          amount,
+          session
         );
       }
     }
