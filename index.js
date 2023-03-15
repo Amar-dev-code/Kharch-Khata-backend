@@ -12,6 +12,7 @@ const {
   insertCategoryWiseExpenses,
 } = require("./routes/insertCategoryWiseExpenses");
 const { insertMonthlyExpense } = require("./routes/insertMonthlyExpense");
+const { insertExpenseCategory } = require("./routes/insertExpenseCategory");
 
 const { STATUS_MESSAGES, ROUTES } = require("./constant");
 
@@ -31,32 +32,42 @@ app.get(ROUTES.GET_EXPENSE_CATEGORIES, async (req, res) => {
 });
 
 app.get(ROUTES.ADD_EXPENSE, async (req, res) => {
+  const client = await connectToDataBase();
+  const session = client.startSession();
   try {
-    const client = await connectToDataBase();
+    session.startTransaction();
     const categories = await getCategories(client);
     if (!categories.includes(req.expenseCategory)) {
-      const isInsertSuccess = await insertExpenseCategory(
-        client,
-        req.expenseCategory
-      );
-      if (!isInsertSuccess) {
-        res.status(500).send(STATUS_MESSAGES.SERVER_ERROR);
-      } else {
-      }
+      await Promise.all([
+        insertExpenseCategory(client, req.expenseCategory),
+        insertTotalMonthlyExpenses(client, 2031, "february", 5000, session),
+        insertMonthlyExpense(client, 2026, "january", "rent", 5000, session),
+        insertCategoryWiseExpenses(client, "rent", 2027, "march", 5000),
+      ]);
+      await session.commitTransaction();
+      res.status(200).send("Expense Added");
+    } else {
+      await Promise.all([
+        insertTotalMonthlyExpenses(client, 2031, "february", 5000, session),
+        insertMonthlyExpense(client, 2026, "january", "rent", 5000, session),
+        insertCategoryWiseExpenses(
+          client,
+          "rent",
+          2027,
+          "march",
+          5000,
+          session
+        ),
+      ]);
+      await session.commitTransaction();
+      res.status(200).send(STATUS_MESSAGES.EXPENSE_ADDED);
     }
-    await Promise.all([
-      insertTotalMonthlyExpenses(client, 2031, "february", 5000),
-      insertMonthlyExpense(client, 2026, "january", "rent", 5000),
-      insertCategoryWiseExpenses(client, "rent", 2027, "march", 5000),
-    ]);
-    res.status(200).send("Expense Added");
   } catch (e) {
+    await session.abortTransaction();
     res.status(500).send(STATUS_MESSAGES.SERVER_ERROR);
+  } finally {
+    session.endSession();
   }
-});
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
 });
 
 app.listen(port, () => {

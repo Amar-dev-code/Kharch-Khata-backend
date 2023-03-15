@@ -9,7 +9,8 @@ async function insertCategoryWiseExpenses(
   category,
   year,
   month,
-  amount
+  amount,
+  session
 ) {
   const documents = await categoryWiseExpensesFromDb(client, category);
   if (!documents.length > 0) {
@@ -20,7 +21,11 @@ async function insertCategoryWiseExpenses(
         },
       },
     };
-    return await insertCategoryWiseExpenseInDb(client, documentToInsert);
+    return await insertCategoryWiseExpenseInDb(
+      client,
+      documentToInsert,
+      session
+    );
   } else {
     if (documents[0].hasOwnProperty(category)) {
       if (documents[0][category].hasOwnProperty(year)) {
@@ -32,7 +37,8 @@ async function insertCategoryWiseExpenses(
             client,
             category,
             monthToBeUpdatedInDb,
-            expenseToBeUpdated
+            expenseToBeUpdated,
+            session
           );
         } else {
           const monthToBeUpdatedInDb = `${category}.${year}.${month}`;
@@ -40,7 +46,8 @@ async function insertCategoryWiseExpenses(
             client,
             category,
             monthToBeUpdatedInDb,
-            amount
+            amount,
+            session
           );
         }
       } else {
@@ -49,7 +56,8 @@ async function insertCategoryWiseExpenses(
           client,
           category,
           monthToBeUpdatedInDb,
-          amount
+          amount,
+          session
         );
       }
     }

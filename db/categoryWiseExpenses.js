@@ -12,23 +12,25 @@ async function updateCategoryWiseExpenseInDb(
   client,
   category,
   categoryToBeUpdated,
-  amount
+  amount,
+  session
 ) {
   const isSuccess = await client
     .db(DATABASE_NAME)
     .collection(COLLECTION_NAMES.CATEGORY_WISE_EXPENSES)
     .updateOne(
       { [category]: { $exists: true } },
-      { $set: { [[categoryToBeUpdated]]: amount } }
+      { $set: { [[categoryToBeUpdated]]: amount } },
+      { session }
     );
   return isSuccess.acknowledged;
 }
 
-async function insertCategoryWiseExpenseInDb(client, document) {
+async function insertCategoryWiseExpenseInDb(client, document, session) {
   const isSuccess = await client
     .db(DATABASE_NAME)
     .collection(COLLECTION_NAMES.CATEGORY_WISE_EXPENSES)
-    .insertOne(document);
+    .insertOne(document, session);
   return isSuccess.acknowledged;
 }
 
