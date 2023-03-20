@@ -73,3 +73,13 @@ app.get(ROUTES.ADD_EXPENSE, async (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
+//Show list of all items for the current month.
+
+app.get("expenseForCurrentMonth", async (req, res) => {
+  try {
+
+  } catch {
+
+  }
+})
