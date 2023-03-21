@@ -13,8 +13,8 @@ const {
 } = require("./routes/insertCategoryWiseExpenses");
 const { insertMonthlyExpense } = require("./routes/insertMonthlyExpense");
 const { insertExpenseCategory } = require("./routes/insertExpenseCategory");
-
-const { STATUS_MESSAGES, ROUTES } = require("./constant");
+const { fetchAllExpensesForTheMonth } = require("./routes/getAllExpensesForTheMonth");
+const { MESSAGES, ROUTES } = require("./constant");
 
 const app = express();
 const port = 3000;
@@ -25,9 +25,9 @@ app.get(ROUTES.GET_EXPENSE_CATEGORIES, async (req, res) => {
     const expenseCategories = await getCategories(client);
     if (expenseCategories.length > 0) {
       res.status(200).send(expenseCategories);
-    } else res.status(200).send(STATUS_MESSAGES.NO_EXPENSE_CATEGORIES_FOUND);
+    } else res.status(200).send(MESSAGES.NO_EXPENSE_CATEGORIES_FOUND);
   } catch (e) {
-    res.status(500).send(STATUS_MESSAGES.SERVER_ERROR);
+    res.status(500).send(MESSAGES.SERVER_ERROR);
   }
 });
 
@@ -60,26 +60,37 @@ app.get(ROUTES.ADD_EXPENSE, async (req, res) => {
         ),
       ]);
       await session.commitTransaction();
-      res.status(200).send(STATUS_MESSAGES.EXPENSE_ADDED);
+      res.status(200).send(MESSAGES.EXPENSE_ADDED);
     }
   } catch (e) {
     await session.abortTransaction();
-    res.status(500).send(STATUS_MESSAGES.SERVER_ERROR);
+    res.status(500).send(MESSAGES.SERVER_ERROR);
   } finally {
     session.endSession();
   }
 });
 
+
+app.get(ROUTES.ALL_EXPENSES_FOR_THE_MONTH, async (req, res) => {
+  try {
+    const client = await connectToDataBase();
+    const year = 2027;
+    const month = "january";
+    const expenses = await fetchAllExpensesForTheMonth(client, year, month);
+    if (expenses.length > 0) {
+      res.status(200).send(expenses[0]);
+    }
+    else {
+      res.status(200).send(MESSAGES.EXPENSE_NOT_FOUND);
+    }
+  } catch {
+    res.status(500).send(MESSAGES.SERVER_ERROR)
+  }
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-//Show list of all items for the current month.
 
-app.get("expenseForCurrentMonth", async (req, res) => {
-  try {
 
-  } catch {
-
-  }
-})

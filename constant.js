@@ -5,14 +5,16 @@ const COLLECTION_NAMES = {
   ALL_EXPENSE_MONTHLY: "allExpensesMonthly",
 };
 const DATABASE_NAME = "myFirstDatabase";
-const STATUS_MESSAGES = {
+const MESSAGES = {
   SERVER_ERROR: "Server error",
   NO_EXPENSE_CATEGORIES_FOUND: "No expense categories found",
   EXPENSE_ADDED: "Expense Added",
+  EXPENSE_NOT_FOUND: "No expenses found"
 };
 const ROUTES = {
   GET_EXPENSE_CATEGORIES: "/getExpenseCategories",
   ADD_EXPENSE: "/addExpense",
+  ALL_EXPENSES_FOR_THE_MONTH: "/allExpensesForTheMonth"
 };
 
-module.exports = { COLLECTION_NAMES, DATABASE_NAME, STATUS_MESSAGES, ROUTES };
+module.exports = { COLLECTION_NAMES, DATABASE_NAME,MESSAGES, ROUTES };
