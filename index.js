@@ -14,6 +14,7 @@ const {
 const { insertMonthlyExpense } = require("./routes/insertMonthlyExpense");
 const { insertExpenseCategory } = require("./routes/insertExpenseCategory");
 const { fetchAllExpensesForTheMonth } = require("./routes/getAllExpensesForTheMonth");
+const { fetchTotalExpenseForTheMonth } = require("./routes/fetchTotalExpenseForTheMonth");
 const { MESSAGES, ROUTES } = require("./constant");
 
 const app = express();
@@ -88,6 +89,18 @@ app.get(ROUTES.ALL_EXPENSES_FOR_THE_MONTH, async (req, res) => {
   }
 })
 
+//get Total monthly expense.
+app.get(ROUTES.TOTAL_EXPENSE_FOR_MONTH, async (req, res) => {
+  try {
+    const client = await connectToDataBase();
+    const year = 2026;
+    const month = "january";
+    const totalExpense = await fetchTotalExpenseForTheMonth(client, year, month);
+    res.status(200).send(totalExpense.toString());
+  } catch {
+    res.status(500).send(MESSAGES.SERVER_ERROR)
+  }
+})
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
