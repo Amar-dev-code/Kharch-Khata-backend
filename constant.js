@@ -14,7 +14,8 @@ const MESSAGES = {
 const ROUTES = {
   GET_EXPENSE_CATEGORIES: "/getExpenseCategories",
   ADD_EXPENSE: "/addExpense",
-  ALL_EXPENSES_FOR_THE_MONTH: "/allExpensesForTheMonth"
+  ALL_EXPENSES_FOR_THE_MONTH: "/allExpensesForTheMonth",
+  TOTAL_EXPENSE_FOR_MONTH: "/totalExpense"
 };
 
-module.exports = { COLLECTION_NAMES, DATABASE_NAME,MESSAGES, ROUTES };
+module.exports = { COLLECTION_NAMES, DATABASE_NAME, MESSAGES, ROUTES };
