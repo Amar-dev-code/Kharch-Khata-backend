@@ -15,7 +15,9 @@ const ROUTES = {
   GET_EXPENSE_CATEGORIES: "/getExpenseCategories",
   ADD_EXPENSE: "/addExpense",
   ALL_EXPENSES_FOR_THE_MONTH: "/allExpensesForTheMonth",
-  TOTAL_EXPENSE_FOR_MONTH: "/totalExpense"
+  TOTAL_EXPENSE_FOR_MONTH: "/totalExpense",
+  MONTHLY_EXPENSES_FOR_THE_YEAR: "/MonthlyExpensesForTheYear",
+  MONTHLY_CATEGORY_EXPENSES_FOR_THE_YEAR: "/monthlyCategoryExpensesForTheYear"
 };
 
 module.exports = { COLLECTION_NAMES, DATABASE_NAME, MESSAGES, ROUTES };
