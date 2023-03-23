@@ -15,11 +15,14 @@ const { insertMonthlyExpense } = require("./routes/insertMonthlyExpense");
 const { insertExpenseCategory } = require("./routes/insertExpenseCategory");
 const { fetchAllExpensesForTheMonth } = require("./routes/getAllExpensesForTheMonth");
 const { fetchTotalExpenseForTheMonth } = require("./routes/fetchTotalExpenseForTheMonth");
+const { fetchMonthlyExpensesForTheYear } = require("./routes/fetchMonthlyExpensesForTheYear");
+const { fetchMonthlyCategoryExpensesForTheYear } = require("./routes/fetchMonthlyCategoryExpensesForTheYear");
 const { MESSAGES, ROUTES } = require("./constant");
 
 const app = express();
 const port = 3000;
 
+//get expense categories
 app.get(ROUTES.GET_EXPENSE_CATEGORIES, async (req, res) => {
   try {
     const client = await connectToDataBase();
@@ -32,6 +35,7 @@ app.get(ROUTES.GET_EXPENSE_CATEGORIES, async (req, res) => {
   }
 });
 
+//submit an expense.
 app.get(ROUTES.ADD_EXPENSE, async (req, res) => {
   const client = await connectToDataBase();
   const session = client.startSession();
@@ -71,7 +75,7 @@ app.get(ROUTES.ADD_EXPENSE, async (req, res) => {
   }
 });
 
-
+//get All expenses for the month.
 app.get(ROUTES.ALL_EXPENSES_FOR_THE_MONTH, async (req, res) => {
   try {
     const client = await connectToDataBase();
@@ -94,13 +98,39 @@ app.get(ROUTES.TOTAL_EXPENSE_FOR_MONTH, async (req, res) => {
   try {
     const client = await connectToDataBase();
     const year = 2026;
-    const month = "january";
+    const month = "february";
     const totalExpense = await fetchTotalExpenseForTheMonth(client, year, month);
     res.status(200).send(totalExpense.toString());
   } catch {
     res.status(500).send(MESSAGES.SERVER_ERROR)
   }
 })
+
+//get monthly expenses for the year.
+app.get(ROUTES.MONTHLY_EXPENSES_FOR_THE_YEAR, async (req, res) => {
+  try {
+    const client = await connectToDataBase();
+    const year = 2026;
+    const totalExpense = await fetchMonthlyExpensesForTheYear(client, year);
+    res.status(200).send(totalExpense);
+  } catch {
+    res.status(500).send(MESSAGES.SERVER_ERROR)
+  }
+})
+
+//get monthly expenses for expense category for the year
+app.get(ROUTES.MONTHLY_CATEGORY_EXPENSES_FOR_THE_YEAR, async (req, res) => {
+  try {
+    const client = await connectToDataBase();
+    const category = "rent";
+    const year = 2027;
+    const totalExpense = await fetchMonthlyCategoryExpensesForTheYear(client, year, category);
+    res.status(200).send(totalExpense);
+  } catch {
+    res.status(500).send(MESSAGES.SERVER_ERROR)
+  }
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
