@@ -19,20 +19,6 @@ const { fetchMonthlyExpensesForTheYear } = require("./routes/fetchMonthlyExpense
 const { fetchMonthlyCategoryExpensesForTheYear } = require("./routes/fetchMonthlyCategoryExpensesForTheYear");
 const { MESSAGES, ROUTES } = require("./constant");
 
-const fs = require('fs');
-const app = express();
-
-// Performance Vulnerability: Synchronous I/O
-app.get('/read-file', (req, res) => {
-  const filePath = req.query.path;
-  try {
-    const data = fs.readFileSync(filePath, 'utf8');
-    res.send(data);
-  } catch (err) {
-    res.status(500).send('Error reading the file.');
-  }
-});
-
 const app = express();
 const port = 3000;
 
@@ -49,28 +35,6 @@ app.get(ROUTES.GET_EXPENSE_CATEGORIES, async (req, res) => {
   }
 });
 
-const express = require('express');
-const app = express(); // Code Smell: Duplicated Code app.get('/hello', (req, res) => { const name = req.query.name || 'Guest'; res.send(`Hello, ${name}!`); }); app.get('/greet', (req, res) => { const name = req.query.name || 'Guest'; res.send(`Greetings, ${name}!`); }); app.listen(3000, () =>
-{ console.log('Server started on http://localhost:3000'); });
-
-const express = require('express');
-const app = express(); 
-// Vulnerability: Cross-site Scripting (XSS) 
-app.get('/search', (req, res) => 
-{ const { query } = req.query; res.send(`<h1>Search results for: ${query}</h1>`); });
-app.listen(3000, () => { console.log('Server started on http://localhost:3000'); });
-
-const express = require('express'); const app = express();
-// Vulnerability:
-SQL injection app.get('/users', (req, res) => 
-  { const { name } = req.query; const query = `SELECT * FROM users WHERE name = '${name}'`; 
-   // Execute the query (In a real application, use a proper database library with parameterized queries)
-   // For demonstration purposes, we're not using a real database connection. 
-   const result = executeQuery(query); res.json(result); }); function executeQuery(query)
-  { // Simulated database query execution 
-    return [ { id: 1, name: 'Alice', email: 'alice@example.com' },
-            { id: 2, name: 'Bob', email: 'bob@example.com' }, ]; } 
-app.listen(3000, () => { console.log('Server started on http://localhost:3000'); });
 //submit an expense.
 app.get(ROUTES.ADD_EXPENSE, async (req, res) => {
   const client = await connectToDataBase();
