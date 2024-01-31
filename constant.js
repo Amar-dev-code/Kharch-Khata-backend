@@ -9,7 +9,7 @@ const MESSAGES = {
   SERVER_ERROR: "Server error",
   NO_EXPENSE_CATEGORIES_FOUND: "No expense categories found",
   EXPENSE_ADDED: "Expense Added",
-  EXPENSE_NOT_FOUND: "No expenses found"
+  EXPENSE_NOT_FOUND: "No expenses found",
 };
 const ROUTES = {
   GET_EXPENSE_CATEGORIES: "/getExpenseCategories",
@@ -17,7 +17,7 @@ const ROUTES = {
   ALL_EXPENSES_FOR_THE_MONTH: "/allExpensesForTheMonth",
   TOTAL_EXPENSE_FOR_MONTH: "/totalExpense",
   MONTHLY_EXPENSES_FOR_THE_YEAR: "/MonthlyExpensesForTheYear",
-  MONTHLY_CATEGORY_EXPENSES_FOR_THE_YEAR: "/monthlyCategoryExpensesForTheYear"
+  MONTHLY_CATEGORY_EXPENSES_FOR_THE_YEAR: "/monthlyCategoryExpensesForTheYear",
 };
 
 module.exports = { COLLECTION_NAMES, DATABASE_NAME, MESSAGES, ROUTES };
