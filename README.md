@@ -12,4 +12,4 @@ To run the container
 - docker run -v pathatwhichapplicationispresentinlocal:pathatwhichapplicationispresentincontainer -p 3000:3000 image_name bash
 - ex : docker run ro -v D:\Amrendra\server_side\Kharch-Khata-backend:/app -p 3000:3000 -d node-final-image
 
-Access the application at localhost:3000 .
+Access the application at localhost:3000
